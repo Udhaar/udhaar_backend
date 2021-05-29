@@ -4,6 +4,8 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
+import uuid
+from django.utils import timezone
 
 
 class UserManager(BaseUserManager):
@@ -24,9 +26,23 @@ class UserManager(BaseUserManager):
         return user
 
 
-class User(AbstractBaseUser, PermissionsMixin):
+class BaseModel(models.Model):
+    external_id = models.UUIDField(default=uuid.uuid4, editable=False)
+    created_date = models.DateTimeField(auto_now=True)
+    last_modified_date = models.DateTimeField(
+        default=timezone.now)
+
+    class Meta:
+        abstract = True
+
+
+class User(AbstractBaseUser, PermissionsMixin, BaseModel):
     email = models.EmailField(max_length=512, unique=True)
     first_name = models.CharField(max_length=255, null=False, blank=False)
     last_name = models.CharField(max_length=255, null=False, blank=False)
     objects = UserManager()
     USERNAME_FIELD = "email"
+
+    def save(self, *args, **kwargs):
+        self.last_modified_date = timezone.now()
+        super(User, self).save(*args, **kwargs)
