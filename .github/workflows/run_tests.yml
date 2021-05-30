@@ -6,4 +6,4 @@ jobs:
         steps:
             - uses: actions/checkout@v2
             - name: Run Tests
-              run: docker-compose run --rm app sh -c "python manage.py -b test && flake8"
+              run: docker-compose run --rm app sh -c "python manage.py test -b && flake8"
