@@ -8,6 +8,7 @@ from core.models import User
 
 user_model: User = get_user_model()
 CREATE_USER_URL = reverse("user:create")
+CREATE_TOKEN_URL = reverse("user:token")
 
 
 def make_user(**kwargs):
@@ -61,3 +62,43 @@ class PublicUserApiTests(TestCase):
             email=payload["email"]
         ).exists()
         self.assertFalse(user_exists)
+
+    def test_create_token_for_user(self):
+        payload = {
+            "email": "test_short@test.com",
+            "password": "test@123",
+        }
+        make_user(**payload)
+        res = self.client.post(CREATE_TOKEN_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn("token", res.data)
+
+    def test_create_token_invalid_credentials(self):
+        payload = {
+            "email": "test_short@test.com",
+            "password": "test@123",
+        }
+        make_user(**payload)
+        payload["password"] = "wrong password"
+        res = self.client.post(CREATE_TOKEN_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNotIn("token", res.data)
+
+    def test_create_token_no_user(self):
+        payload = {
+            "email": "test_short@test.com",
+            "password": "test@123",
+        }
+        res = self.client.post(CREATE_TOKEN_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNotIn("token", res.data)
+
+    def test_create_token_missing_field(self):
+        payload = {
+            "email": "test_short@test.com",
+            "password": "test@123",
+        }
+        make_user(**payload)
+        res = self.client.post(CREATE_TOKEN_URL, {"email": payload["email"]})
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNotIn("token", res.data)
