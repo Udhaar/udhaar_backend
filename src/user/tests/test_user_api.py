@@ -9,12 +9,13 @@ from core.models import User
 user_model: User = get_user_model()
 CREATE_USER_URL = reverse("user:create")
 CREATE_TOKEN_URL = reverse("user:token")
+USER_URL = reverse("user:me")
 
 
-def make_user(**kwargs):
+def make_user(first_name="fname", last_name="lname", **kwargs):
     return user_model.objects.create_user(
-        last_name="lname",
-        first_name="fname",
+        last_name=last_name,
+        first_name=first_name,
         **kwargs,
     )
 
@@ -102,3 +103,53 @@ class PublicUserApiTests(TestCase):
         res = self.client.post(CREATE_TOKEN_URL, {"email": payload["email"]})
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertNotIn("token", res.data)
+
+    def test_retrieve_user_unauthorized(self):
+        res = self.client.get(USER_URL)
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class PrivateUserApiTests(TestCase):
+    def setUp(self):
+        self.user = make_user(first_name="testfirst", last_name="testlast",
+                              email="admin@test.com", password="admin123")
+        self.user.refresh_from_db()
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+    def test_retrieve_profile_success(self):
+        res = self.client.get(USER_URL)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data["first_name"], self.user.first_name)
+        self.assertEqual(res.data["last_name"], self.user.last_name)
+        self.assertEqual(res.data["email"], self.user.email)
+        self.assertEqual(res.data["external_id"], str(self.user.external_id))
+
+    def test_post_me_not_allowed(self):
+        res = self.client.post(USER_URL, {})
+        self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_update_user_profile(self):
+        payload = {
+            "first_name": "newfirstname",
+            "last_name": "newlastname",
+            "password": "newpassword"
+        }
+
+        res = self.client.patch(USER_URL, payload)
+        self.user.refresh_from_db()
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(payload["first_name"], self.user.first_name)
+        self.assertEqual(payload["last_name"], self.user.last_name)
+        self.assertTrue(self.user.check_password(payload["password"]))
+
+    def test_update_user_email_fails(self):
+        old_email = self.user.email
+        payload = {
+            "email": "something@email.com",
+        }
+
+        res = self.client.patch(USER_URL, payload)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.email, old_email)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)

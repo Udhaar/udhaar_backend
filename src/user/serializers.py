@@ -8,6 +8,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = get_user_model()
         fields = ["external_id", "email",
                   "password", "first_name", "last_name"]
+        read_only_fields = ("external_id",)
         extra_kwargs = {
             "password": {
                 "write_only": True,
@@ -17,6 +18,20 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return get_user_model().objects.create_user(**validated_data)
+
+    def update(self, instance, validated_data):
+        email = validated_data.pop("email", None)
+        if email:
+            raise serializers.ValidationError(
+                {"error": "email cannot be updated"})
+
+        password = validated_data.pop("password", None)
+        user = super().update(instance, validated_data)
+        if password:
+            user.set_password(password)
+            user.save()
+
+        return user
 
 
 class AuthTokenSerializer(serializers.Serializer):
