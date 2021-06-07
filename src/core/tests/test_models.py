@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from datetime import datetime
-from ..models import User
+from ..models import User, Transaction
 
 user_model = get_user_model()
 test_date = datetime.now()
@@ -75,3 +75,29 @@ class ModelTests(TestCase):
         user.first_name = "test2"
         user.save()
         self.assertGreater(user.last_modified_date, modified_date)
+
+    def test_transaction_string(self):
+        payer = user_model.objects.create_user(
+            email="payer@gmail.com",
+            password="Payer@123",
+            first_name="PayerF",
+            last_name="PayerL",
+        )
+        receiver = user_model.objects.create_user(
+            email="receiver@gmail.com",
+            password="Receiver@123",
+            first_name="ReceiverF",
+            last_name="ReceiverL",
+        )
+
+        transaction = Transaction.objects.create(
+            payer=payer,
+            receiver=receiver,
+            amount=10.00,
+            message="First transaction"
+        )
+
+        self.assertEqual(
+            str(transaction),
+            "Transaction PayerF PayerL => ReceiverF ReceiverL : 10.00"
+        )

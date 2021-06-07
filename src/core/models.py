@@ -6,6 +6,7 @@ from django.contrib.auth.models import (
 )
 import uuid
 from django.utils import timezone
+import enum
 
 
 class UserManager(BaseUserManager):
@@ -48,3 +49,39 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
     def save(self, *args, **kwargs):
         self.last_modified_date = timezone.now()
         super(User, self).save(*args, **kwargs)
+
+    def name(self):
+        return f"{self.first_name} {self.last_name}"
+
+
+class StatusChoices(enum.Enum):
+    PENDING = 1
+    ACCEPTED = 2
+    DECLINED = 3
+
+
+STATUS_CHOICES = [(choice.value, choice.name) for choice in StatusChoices]
+
+
+class Transaction(BaseModel):
+    payer = models.ForeignKey(
+        User, on_delete=models.PROTECT, null=False,
+        blank=False, related_name="payer"
+    )
+    receiver = models.ForeignKey(
+        User, on_delete=models.PROTECT, null=False,
+        blank=False, related_name="receiver"
+    )
+    amount = models.DecimalField(
+        decimal_places=2, null=False, blank=False, max_digits=50
+    )
+    status = models.IntegerField(
+        choices=STATUS_CHOICES, blank=False, null=False, default=1
+    )
+    declined_comment = models.TextField(null=True, blank=True)
+    message = models.TextField(null=False, blank=False)
+    is_deleted = models.BooleanField(default=False, null=False, blank=False)
+
+    def __str__(self) -> str:
+        return f"Transaction {self.payer.name()} => {self.receiver.name()} : \
+{self.amount:.2f}"
