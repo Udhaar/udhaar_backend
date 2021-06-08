@@ -93,6 +93,7 @@ class ModelTests(TestCase):
         transaction = Transaction.objects.create(
             payer=payer,
             receiver=receiver,
+            created_by=payer,
             amount=10.00,
             message="First transaction"
         )

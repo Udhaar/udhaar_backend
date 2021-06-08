@@ -9,10 +9,13 @@ class TransactionCreateSerializer(serializers.ModelSerializer):
         slug_field="external_id", queryset=User.objects.all())
     receiver = serializers.SlugRelatedField(
         slug_field="external_id", queryset=User.objects.all())
+    created_by = serializers.SlugRelatedField(
+        slug_field="external_id", queryset=User.objects.all())
 
     class Meta:
         model = Transaction
-        fields = ["payer", "receiver", "amount", "message", "external_id"]
+        fields = ["payer", "receiver", "created_by",
+                  "amount", "message", "external_id"]
         read_only_fields = ("external_id",)
 
     def validate_amount(self, value):
@@ -23,13 +26,14 @@ class TransactionCreateSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, attrs):
-        if attrs["receiver"] == attrs["payer"]:
-            raise ValidationError(_("You can't transact with yourself"))
+        # print(self.context["view"].action)
+        if self.context["view"].action == "create":
+            if attrs["receiver"] == attrs["payer"]:
+                raise ValidationError(_("You can't transact with yourself"))
         return attrs
 
 
 class TransactionSerializer(TransactionCreateSerializer):
-
     class Meta:
         model = Transaction
         exclude = ("id", "is_deleted")

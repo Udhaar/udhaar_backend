@@ -6,11 +6,19 @@ from rest_framework import status
 
 from transaction.serializers import TransactionSerializer
 
-TRANSACTION_URL = reverse("transaction:transaction")
+TRANSACTION_URL = reverse("transaction:transaction-list")
+
+
+def transaction_detail_url(transaction):
+    return reverse(
+        "transaction:transaction-detail", args={transaction.external_id})
 
 
 def transactions_list_url(user: User):
-    return reverse("transaction:transaction", get={"user": user.external_id})
+    return reverse(
+        "transaction:transaction-list",
+        get={"user": user.external_id}
+    )
 
 
 class TransactionApiTest(TestCase):
@@ -200,3 +208,57 @@ class TransactionApiTest(TestCase):
         res = self.client.get(
             f"{TRANSACTION_URL}?user={self.user1.external_id}")
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_transactions_status_accepted(self):
+        payload = {
+            "receiver": self.user2.external_id,
+            "amount": 10.00,
+            "message": "first transaction"
+        }
+        self.client.force_authenticate(self.user1)
+        res = self.client.post(TRANSACTION_URL, payload, format="json")
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        transaction: Transaction = Transaction.objects.get(
+            external_id=res.data["external_id"])
+        self.client.force_authenticate(self.user2)
+        res = self.client.patch(
+            transaction_detail_url(transaction), {"status": 2})
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        transaction.refresh_from_db()
+        self.assertEqual(transaction.status, 2)
+
+    def test_update_transactions_status_accepted_by_owner_fail(self):
+        payload = {
+            "receiver": self.user2.external_id,
+            "amount": 10.00,
+            "message": "first transaction"
+        }
+        self.client.force_authenticate(self.user1)
+        res = self.client.post(TRANSACTION_URL, payload, format="json")
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        transaction: Transaction = Transaction.objects.get(
+            external_id=res.data["external_id"])
+        # self.client.force_authenticate(self.user2)
+        res = self.client.patch(
+            transaction_detail_url(transaction), {"status": 2})
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        transaction.refresh_from_db()
+        self.assertEqual(transaction.status, 1)
+
+    def test_update_transactions_status_accepted_by_other_fail(self):
+        payload = {
+            "receiver": self.user2.external_id,
+            "amount": 10.00,
+            "message": "first transaction"
+        }
+        self.client.force_authenticate(self.user1)
+        res = self.client.post(TRANSACTION_URL, payload, format="json")
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        transaction: Transaction = Transaction.objects.get(
+            external_id=res.data["external_id"])
+        self.client.force_authenticate(self.user3)
+        res = self.client.patch(
+            transaction_detail_url(transaction), {"status": 2})
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        transaction.refresh_from_db()
+        self.assertEqual(transaction.status, 1)

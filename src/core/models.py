@@ -72,6 +72,10 @@ class Transaction(BaseModel):
         User, on_delete=models.PROTECT, null=False,
         blank=False, related_name="receiver"
     )
+    created_by = models.ForeignKey(
+        User, on_delete=models.PROTECT, null=False,
+        blank=False, related_name="created_by"
+    )
     amount = models.DecimalField(
         decimal_places=2, null=False, blank=False, max_digits=50
     )
