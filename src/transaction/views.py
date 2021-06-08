@@ -5,7 +5,7 @@ from rest_framework import (viewsets,
                             response
                             )
 from core.models import Transaction, User
-from .serializers import TransactionSerializer
+from .serializers import TransactionSerializer, TransactionCreateSerializer
 
 
 class TransactionViewSet(viewsets.ModelViewSet):
@@ -13,6 +13,11 @@ class TransactionViewSet(viewsets.ModelViewSet):
     queryset = Transaction.objects.filter(is_deleted=False)
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.action == "create":
+            return TransactionCreateSerializer
+        return TransactionSerializer
 
     def get_queryset(self):
         user1 = self.request.user
