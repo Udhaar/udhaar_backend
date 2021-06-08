@@ -20,18 +20,27 @@ class TransactionViewSet(viewsets.ModelViewSet):
         return TransactionSerializer
 
     def get_queryset(self):
-        user1 = self.request.user
-        user2 = User.objects.get(id=self.kwargs.get("user2"))
-        return self.queryset.filter(payer=user1, receiver=user2).union(
-            self.queryset.filter(payer=user2, receiver=user1)
-        )
+        if self.action == "list":
+            user1 = self.request.user
+            user2 = User.objects.get(
+                external_id=self.request.query_params.get("user"))
+            return self.queryset.filter(payer=user1, receiver=user2).union(
+                self.queryset.filter(payer=user2, receiver=user1)
+            )
+        else:
+            return super().get_queryset()
 
-    # def list(self, request, *args, **kwargs):
-    #     user2 = kwargs.get("user2")
-    #     print(user2)
-    #     print(request, args, kwargs)
-    #     self.get_queryset()
-    #     return self.get_queryset()
+    def list(self, request, *args, **kwargs):
+        user1 = self.request.user
+        user2 = User.objects.get(
+            external_id=request.query_params.get("user"))
+        if user1.id == user2.id:
+            return response.Response({
+                "error": "Cannot query transaction with yourself!"
+            }, status=status.HTTP_400_BAD_REQUEST)
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return response.Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         if "receiver" in request.data and "payer" in request.data:

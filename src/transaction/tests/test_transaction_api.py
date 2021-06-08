@@ -4,8 +4,13 @@ from core.models import Transaction, User
 from django.urls import reverse
 from rest_framework import status
 
-TRANSACTION_CREATE_URL = reverse("transaction:transaction")
-# TRANSACTIONS_URL = reverse("transaction:list")
+from transaction.serializers import TransactionSerializer
+
+TRANSACTION_URL = reverse("transaction:transaction")
+
+
+def transactions_list_url(user: User):
+    return reverse("transaction:transaction", get={"user": user.external_id})
 
 
 class TransactionApiTest(TestCase):
@@ -43,7 +48,7 @@ class TransactionApiTest(TestCase):
             "amount": 10.0,
             "message": "Some transaction"
         }
-        res = self.client.post(TRANSACTION_CREATE_URL, payload, format="json")
+        res = self.client.post(TRANSACTION_URL, payload, format="json")
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         transaction = Transaction.objects.get(
@@ -64,7 +69,7 @@ class TransactionApiTest(TestCase):
             "amount": 10.0,
             "message": "Some transaction"
         }
-        res = self.client.post(TRANSACTION_CREATE_URL, payload, format="json")
+        res = self.client.post(TRANSACTION_URL, payload, format="json")
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         transaction = Transaction.objects.get(
@@ -86,7 +91,7 @@ class TransactionApiTest(TestCase):
             "amount": 10.0,
             "message": "Some transaction"
         }
-        res = self.client.post(TRANSACTION_CREATE_URL, payload, format="json")
+        res = self.client.post(TRANSACTION_URL, payload, format="json")
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(len(Transaction.objects.all()), 0)
@@ -98,7 +103,7 @@ class TransactionApiTest(TestCase):
             "amount": 0,
             "message": "Some transaction"
         }
-        res = self.client.post(TRANSACTION_CREATE_URL, payload, format="json")
+        res = self.client.post(TRANSACTION_URL, payload, format="json")
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(len(Transaction.objects.all()), 0)
@@ -110,7 +115,7 @@ class TransactionApiTest(TestCase):
             "amount": -10,
             "message": "Some transaction"
         }
-        res = self.client.post(TRANSACTION_CREATE_URL, payload, format="json")
+        res = self.client.post(TRANSACTION_URL, payload, format="json")
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(len(Transaction.objects.all()), 0)
@@ -122,18 +127,76 @@ class TransactionApiTest(TestCase):
             "amount": 10,
             "message": ""
         }
-        res = self.client.post(TRANSACTION_CREATE_URL, payload, format="json")
+        res = self.client.post(TRANSACTION_URL, payload, format="json")
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(len(Transaction.objects.all()), 0)
 
-    # def test_create_transaction_success(self):
-    #     transaction = self.client.post(TRANSACTION_CREATE_URL, {
-    #         "payer": self.user1,
-    #         "receiver": self.user2,
-    #         "amount": 10.00,
-    #         "message": "first transaction"
-    #     })
-    #     res = self.client.get(
-    #         reverse('transaction:list', args=(self.user2.id, self.user1.id)))
-    #     print(res, res.data)
+    def test_create_transaction_same_user(self):
+        self.client.force_authenticate(self.user1)
+        payload = {
+            "receiver": self.user1.external_id,
+            "amount": 10.00,
+            "message": "first transaction"
+        }
+        res = self.client.post(TRANSACTION_URL, payload, format="json")
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(len(Transaction.objects.all()), 0)
+
+    def test_list_transaction(self):
+        payload1 = {
+            "receiver": self.user2.external_id,
+            "amount": 10.00,
+            "message": "first transaction"
+        }
+        payload2 = {
+            "receiver": self.user3.external_id,
+            "amount": 15.00,
+            "message": "second transaction"
+        }
+        payload3 = {
+            "receiver": self.user4.external_id,
+            "amount": 20.00,
+            "message": "third transaction"
+        }
+        payload4 = {
+            "receiver": self.user3.external_id,
+            "amount": 25.00,
+            "message": "third transaction"
+        }
+
+        self.client.force_authenticate(self.user1)
+        self.client.post(
+            TRANSACTION_URL, payload1, format="json")
+
+        self.client.force_authenticate(self.user2)
+        self.client.post(
+            TRANSACTION_URL, payload2, format="json")
+
+        self.client.force_authenticate(self.user3)
+        transaction3 = self.client.post(
+            TRANSACTION_URL, payload3, format="json")
+
+        self.client.force_authenticate(self.user4)
+        transaction4 = self.client.post(
+            TRANSACTION_URL, payload4, format="json")
+
+        transactions = TransactionSerializer(
+            [
+                Transaction.objects.get(
+                    external_id=transaction3.data["external_id"]),
+                Transaction.objects.get(
+                    external_id=transaction4.data["external_id"]),
+            ],
+            many=True
+        )
+        res = self.client.get(
+            f"{TRANSACTION_URL}?user={self.user3.external_id}")
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, transactions.data)
+
+    def test_list_transactions_same_user(self):
+        self.client.force_authenticate(self.user1)
+        res = self.client.get(
+            f"{TRANSACTION_URL}?user={self.user1.external_id}")
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
