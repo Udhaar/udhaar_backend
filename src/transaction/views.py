@@ -5,7 +5,9 @@ from rest_framework import (viewsets,
                             response
                             )
 from core.models import Transaction, User
-from .serializers import TransactionSerializer, TransactionCreateSerializer
+from .serializers import (TransactionSerializer,
+                          TransactionCreateSerializer,
+                          TransactionUpdateSerializer)
 
 
 class TransactionViewSet(viewsets.ModelViewSet):
@@ -18,6 +20,8 @@ class TransactionViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == "create":
             return TransactionCreateSerializer
+        if self.action == "partial_update":
+            return TransactionUpdateSerializer
         return TransactionSerializer
 
     def get_queryset(self):
@@ -57,23 +61,3 @@ class TransactionViewSet(viewsets.ModelViewSet):
             request.data["receiver"] = str(current_user.external_id)
         request.data["created_by"] = str(current_user.external_id)
         return super().create(request, *args, **kwargs)
-
-    def update(self, request, *args, **kwargs):
-        transaction = self.get_object()
-        if not (self.request.user.id != transaction.created_by.id and
-                (self.request.user.id == transaction.payer.id or
-                 self.request.user.id == transaction.receiver.id)):
-            return response.Response({
-                "error": {
-                    "You cannot change this transaction"
-                }
-            }, status=status.HTTP_400_BAD_REQUEST)
-        # print(self.get_object())
-        for key in request.data.keys():
-            if key not in {"status", "declined_comment"}:
-                return response.Response({
-                    "error": {
-                        "Only status and declined_comment can be changed"
-                    }
-                }, status=status.HTTP_400_BAD_REQUEST)
-        return super().update(request, *args, **kwargs)

@@ -262,3 +262,201 @@ class TransactionApiTest(TestCase):
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         transaction.refresh_from_db()
         self.assertEqual(transaction.status, 1)
+
+    def test_update_transactions_message_fails(self):
+        payload = {
+            "receiver": self.user2.external_id,
+            "amount": 10.00,
+            "message": "first transaction"
+        }
+        self.client.force_authenticate(self.user1)
+        res = self.client.post(TRANSACTION_URL, payload, format="json")
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        transaction: Transaction = Transaction.objects.get(
+            external_id=res.data["external_id"])
+        self.client.force_authenticate(self.user2)
+
+        res = self.client.patch(
+            transaction_detail_url(transaction), {
+                "message": "some other message"
+            }
+        )
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+        transaction.refresh_from_db()
+        self.assertEqual(transaction.message, payload["message"])
+
+    def test_update_transactions_amount_fails(self):
+        payload = {
+            "receiver": self.user2.external_id,
+            "amount": 10.00,
+            "message": "first transaction"
+        }
+        self.client.force_authenticate(self.user1)
+        res = self.client.post(TRANSACTION_URL, payload, format="json")
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        transaction: Transaction = Transaction.objects.get(
+            external_id=res.data["external_id"])
+        self.client.force_authenticate(self.user2)
+
+        res = self.client.patch(
+            transaction_detail_url(transaction), {"amount": 15.00})
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+        transaction.refresh_from_db()
+        self.assertEqual(transaction.amount, payload["amount"])
+
+    def test_update_transaction_declined_success_with_comment(self):
+        payload = {
+            "receiver": self.user2.external_id,
+            "amount": 10.00,
+            "message": "first transaction"
+        }
+        self.client.force_authenticate(self.user1)
+        res = self.client.post(TRANSACTION_URL, payload, format="json")
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        transaction: Transaction = Transaction.objects.get(
+            external_id=res.data["external_id"])
+        self.client.force_authenticate(self.user2)
+
+        res = self.client.patch(
+            transaction_detail_url(transaction), {
+                "status": 3,
+                "declined_comment": "Some explanation"
+            }
+        )
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        transaction.refresh_from_db()
+        self.assertEqual(transaction.status, 3)
+        self.assertEqual(transaction.declined_comment, "Some explanation")
+
+    def test_update_transaction_declined_success_without_comment(self):
+        payload = {
+            "receiver": self.user2.external_id,
+            "amount": 10.00,
+            "message": "first transaction"
+        }
+        self.client.force_authenticate(self.user1)
+        res = self.client.post(TRANSACTION_URL, payload, format="json")
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        transaction: Transaction = Transaction.objects.get(
+            external_id=res.data["external_id"])
+        self.client.force_authenticate(self.user2)
+
+        res = self.client.patch(
+            transaction_detail_url(transaction), {
+                "status": 3
+            }
+        )
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        transaction.refresh_from_db()
+        self.assertEqual(transaction.status, 3)
+        self.assertEqual(transaction.declined_comment, None)
+
+    def test_update_transaction_accepted_fail_with_comment(self):
+        payload = {
+            "receiver": self.user2.external_id,
+            "amount": 10.00,
+            "message": "first transaction"
+        }
+        self.client.force_authenticate(self.user1)
+        res = self.client.post(TRANSACTION_URL, payload, format="json")
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        transaction: Transaction = Transaction.objects.get(
+            external_id=res.data["external_id"])
+        self.client.force_authenticate(self.user2)
+
+        res = self.client.patch(
+            transaction_detail_url(transaction), {
+                "status": 2,
+                "declined_comment": "Some explanation"
+            }
+        )
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+        transaction.refresh_from_db()
+        self.assertEqual(transaction.status, 1)
+        self.assertEqual(transaction.declined_comment, None)
+
+    def test_update_accepted_transaction(self):
+        payload = {
+            "receiver": self.user2.external_id,
+            "amount": 10.00,
+            "message": "first transaction"
+        }
+        self.client.force_authenticate(self.user1)
+        res = self.client.post(TRANSACTION_URL, payload, format="json")
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        transaction: Transaction = Transaction.objects.get(
+            external_id=res.data["external_id"])
+
+        self.assertEqual(transaction.status, 1)
+
+        self.client.force_authenticate(self.user2)
+
+        res = self.client.patch(
+            transaction_detail_url(transaction), {
+                "status": 2,
+            }
+        )
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        transaction.refresh_from_db()
+        self.assertEqual(transaction.status, 2)
+        self.assertEqual(transaction.declined_comment, None)
+
+        res = self.client.patch(
+            transaction_detail_url(transaction), {
+                "status": 3,
+                "declined_comment": "some explanation"
+            }
+        )
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+        transaction.refresh_from_db()
+        self.assertEqual(transaction.status, 2)
+        self.assertEqual(transaction.declined_comment, None)
+
+        res = self.client.patch(
+            transaction_detail_url(transaction), {
+                "status": 1,
+            }
+        )
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+        transaction.refresh_from_db()
+        self.assertEqual(transaction.status, 2)
+        self.assertEqual(transaction.declined_comment, None)
+
+    def test_update_transaction_update_fail_only_declined_comment(self):
+        payload = {
+            "receiver": self.user2.external_id,
+            "amount": 10.00,
+            "message": "first transaction"
+        }
+        self.client.force_authenticate(self.user1)
+        res = self.client.post(TRANSACTION_URL, payload, format="json")
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        transaction: Transaction = Transaction.objects.get(
+            external_id=res.data["external_id"])
+        self.client.force_authenticate(self.user2)
+
+        res = self.client.patch(
+            transaction_detail_url(transaction), {
+                "declined_comment": "Some explanation"
+            }
+        )
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+        transaction.refresh_from_db()
+        self.assertEqual(transaction.status, 1)
+        self.assertEqual(transaction.declined_comment, None)
