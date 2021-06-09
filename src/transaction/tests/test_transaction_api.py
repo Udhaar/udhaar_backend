@@ -1,9 +1,8 @@
 from django.test import TestCase
 from rest_framework.test import APIClient
-from core.models import Transaction, User
+from core.models import Transaction, User, StatusChoices
 from django.urls import reverse
 from rest_framework import status
-
 from transaction.serializers import TransactionSerializer
 
 TRANSACTION_URL = reverse("transaction:transaction-list")
@@ -208,6 +207,73 @@ class TransactionApiTest(TestCase):
         res = self.client.get(
             f"{TRANSACTION_URL}?user={self.user1.external_id}")
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_do_not_list_declined_transactions(self):
+        payload1 = {
+            "receiver": self.user2.external_id,
+            "amount": 10.00,
+            "message": "first transaction"
+        }
+        payload2 = {
+            "receiver": self.user3.external_id,
+            "amount": 15.00,
+            "message": "second transaction"
+        }
+        payload3 = {
+            "receiver": self.user4.external_id,
+            "amount": 20.00,
+            "message": "third transaction"
+        }
+        payload4 = {
+            "receiver": self.user3.external_id,
+            "amount": 25.00,
+            "message": "third transaction"
+        }
+        payload5 = {
+            "receiver": self.user3.external_id,
+            "amount": 35.00,
+            "message": "third transaction"
+        }
+
+        self.client.force_authenticate(self.user1)
+        self.client.post(
+            TRANSACTION_URL, payload1, format="json")
+
+        self.client.force_authenticate(self.user2)
+        self.client.post(
+            TRANSACTION_URL, payload2, format="json")
+
+        self.client.force_authenticate(self.user3)
+        transaction3 = self.client.post(
+            TRANSACTION_URL, payload3, format="json")
+
+        self.client.force_authenticate(self.user4)
+        transaction4 = self.client.post(
+            TRANSACTION_URL, payload4, format="json")
+
+        transaction5 = self.client.post(
+            TRANSACTION_URL, payload5, format="json")
+
+        transaction3_data = Transaction.objects.get(
+            external_id=transaction3.data["external_id"])
+        transaction4_data = Transaction.objects.get(
+            external_id=transaction4.data["external_id"])
+        transaction5_data = Transaction.objects.get(
+            external_id=transaction5.data["external_id"])
+
+        transaction4_data.status = StatusChoices.ACCEPTED.value
+        transaction4_data.save()
+        transaction5_data.status = StatusChoices.DECLINED.value
+        transaction5_data.save()
+
+        transactions = TransactionSerializer(
+            [transaction3_data, transaction4_data],
+            many=True
+        )
+        res = self.client.get(
+            f"{TRANSACTION_URL}?user={self.user3.external_id}")
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, transactions.data)
 
     def test_update_transactions_status_accepted(self):
         payload = {

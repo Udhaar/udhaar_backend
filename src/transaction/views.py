@@ -4,7 +4,7 @@ from rest_framework import (viewsets,
                             status,
                             response
                             )
-from core.models import Transaction, User
+from core.models import StatusChoices, Transaction, User
 from .serializers import (TransactionSerializer,
                           TransactionCreateSerializer,
                           TransactionUpdateSerializer)
@@ -12,7 +12,8 @@ from .serializers import (TransactionSerializer,
 
 class TransactionViewSet(viewsets.ModelViewSet):
     serializer_class = TransactionSerializer
-    queryset = Transaction.objects.filter(is_deleted=False)
+    queryset = Transaction.objects.filter(is_deleted=False).exclude(
+        status=StatusChoices.DECLINED.value)
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = "external_id"
