@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from . import views
 
 router = DefaultRouter()
-router.register("transaction", views.TransactionViewSet)
+router.register("", views.TransactionViewSet)
 
 
 app_name = "transaction"
