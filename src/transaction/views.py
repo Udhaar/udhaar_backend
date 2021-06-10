@@ -62,3 +62,18 @@ class TransactionViewSet(viewsets.ModelViewSet):
             request.data["receiver"] = str(current_user.external_id)
         request.data["created_by"] = str(current_user.external_id)
         return super().create(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        transaction: Transaction = self.get_object()
+        if (transaction.status == StatusChoices.PENDING.value
+                and transaction.created_by.id == request.user.id):
+            transaction.is_deleted = True
+            transaction.save()
+            return response.Response(
+                {"success": {"deleted"}},
+                status=status.HTTP_200_OK
+            )
+        return response.Response(
+            {"error": {"You cannot delete this transaction"}},
+            status=status.HTTP_400_BAD_REQUEST
+        )

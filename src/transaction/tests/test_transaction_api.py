@@ -526,3 +526,61 @@ class TransactionApiTest(TestCase):
         transaction.refresh_from_db()
         self.assertEqual(transaction.status, 1)
         self.assertEqual(transaction.declined_comment, None)
+
+    def test_transaction_delete_pending_success(self):
+        payload = {
+            "receiver": self.user2.external_id,
+            "amount": 10.00,
+            "message": "first transaction"
+        }
+        self.client.force_authenticate(self.user1)
+        res = self.client.post(TRANSACTION_URL, payload, format="json")
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        transaction: Transaction = Transaction.objects.get(
+            external_id=res.data["external_id"])
+        url = transaction_detail_url(transaction)
+        res = self.client.delete(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        transaction.refresh_from_db()
+        self.assertTrue(transaction.is_deleted)
+
+    def test_transaction_delete_accepted_fails(self):
+        payload = {
+            "receiver": self.user2.external_id,
+            "amount": 10.00,
+            "message": "first transaction"
+        }
+        self.client.force_authenticate(self.user1)
+        res = self.client.post(TRANSACTION_URL, payload, format="json")
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        transaction: Transaction = Transaction.objects.get(
+            external_id=res.data["external_id"])
+        transaction.status = StatusChoices.ACCEPTED.value
+        transaction.save()
+
+        res = self.client.delete(transaction_detail_url(transaction))
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        transaction.refresh_from_db()
+        self.assertFalse(transaction.is_deleted)
+
+    def test_transaction_delete_declined_fails(self):
+        payload = {
+            "receiver": self.user2.external_id,
+            "amount": 10.00,
+            "message": "first transaction"
+        }
+        self.client.force_authenticate(self.user1)
+        res = self.client.post(TRANSACTION_URL, payload, format="json")
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        transaction: Transaction = Transaction.objects.get(
+            external_id=res.data["external_id"])
+        transaction.status = StatusChoices.DECLINED.value
+        transaction.save()
+
+        res = self.client.delete(transaction_detail_url(transaction))
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+        transaction.refresh_from_db()
+        self.assertFalse(transaction.is_deleted)
