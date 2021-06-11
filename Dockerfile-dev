@@ -4,5 +4,6 @@ RUN pip install -r /requirements.txt
 RUN mkdir /src
 WORKDIR /src
 COPY ./src /src
+RUN python manage.py collectstatic --noinput
 RUN useradd -ms /bin/sh user
 USER user
