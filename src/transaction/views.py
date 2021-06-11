@@ -77,3 +77,13 @@ class TransactionViewSet(viewsets.ModelViewSet):
             {"error": {"You cannot delete this transaction"}},
             status=status.HTTP_400_BAD_REQUEST
         )
+
+    def perform_update(self, serializer):
+        transaction = self.get_object()
+        if serializer.validated_data["status"] == StatusChoices.ACCEPTED.value:
+            transaction.accept()
+        else:
+            transaction.decline(
+                serializer.validated_data.get("declined_comment")
+            )
+        return serializer.data

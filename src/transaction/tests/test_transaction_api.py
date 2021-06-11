@@ -1,6 +1,6 @@
 from django.test import TestCase
 from rest_framework.test import APIClient
-from core.models import Transaction, User, StatusChoices
+from core.models import OutstandingBalance, Transaction, User, StatusChoices
 from django.urls import reverse
 from rest_framework import status
 from transaction.serializers import TransactionSerializer
@@ -293,6 +293,17 @@ class TransactionApiTest(TestCase):
         transaction.refresh_from_db()
         self.assertEqual(transaction.status, 2)
 
+        positive_balance_object = OutstandingBalance.objects.get(
+            payer=self.user1,
+            receiver=self.user2,
+        )
+        negative_balance_object = OutstandingBalance.objects.get(
+            payer=self.user2,
+            receiver=self.user1,
+        )
+        self.assertEqual(positive_balance_object.balance, payload["amount"])
+        self.assertEqual(negative_balance_object.balance, -payload["amount"])
+
     def test_update_transactions_status_accepted_by_owner_fail(self):
         payload = {
             "receiver": self.user2.external_id,
@@ -311,6 +322,17 @@ class TransactionApiTest(TestCase):
         transaction.refresh_from_db()
         self.assertEqual(transaction.status, 1)
 
+        positive_balance_object = OutstandingBalance.objects.filter(
+            payer=self.user1,
+            receiver=self.user2,
+        ).first()
+        negative_balance_object = OutstandingBalance.objects.filter(
+            payer=self.user2,
+            receiver=self.user1,
+        ).first()
+        self.assertIsNone(positive_balance_object)
+        self.assertIsNone(negative_balance_object)
+
     def test_update_transactions_status_accepted_by_other_fail(self):
         payload = {
             "receiver": self.user2.external_id,
@@ -328,6 +350,17 @@ class TransactionApiTest(TestCase):
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         transaction.refresh_from_db()
         self.assertEqual(transaction.status, 1)
+
+        positive_balance_object = OutstandingBalance.objects.filter(
+            payer=self.user1,
+            receiver=self.user2,
+        ).first()
+        negative_balance_object = OutstandingBalance.objects.filter(
+            payer=self.user2,
+            receiver=self.user1,
+        ).first()
+        self.assertIsNone(positive_balance_object)
+        self.assertIsNone(negative_balance_object)
 
     def test_update_transactions_message_fails(self):
         payload = {
@@ -400,6 +433,17 @@ class TransactionApiTest(TestCase):
         self.assertEqual(transaction.status, 3)
         self.assertEqual(transaction.declined_comment, "Some explanation")
 
+        positive_balance_object = OutstandingBalance.objects.filter(
+            payer=self.user1,
+            receiver=self.user2,
+        ).first()
+        negative_balance_object = OutstandingBalance.objects.filter(
+            payer=self.user2,
+            receiver=self.user1,
+        ).first()
+        self.assertIsNone(positive_balance_object)
+        self.assertIsNone(negative_balance_object)
+
     def test_update_transaction_declined_success_without_comment(self):
         payload = {
             "receiver": self.user2.external_id,
@@ -424,6 +468,17 @@ class TransactionApiTest(TestCase):
         transaction.refresh_from_db()
         self.assertEqual(transaction.status, 3)
         self.assertEqual(transaction.declined_comment, None)
+
+        positive_balance_object = OutstandingBalance.objects.filter(
+            payer=self.user1,
+            receiver=self.user2,
+        ).first()
+        negative_balance_object = OutstandingBalance.objects.filter(
+            payer=self.user2,
+            receiver=self.user1,
+        ).first()
+        self.assertIsNone(positive_balance_object)
+        self.assertIsNone(negative_balance_object)
 
     def test_update_transaction_accepted_fail_with_comment(self):
         payload = {
@@ -450,6 +505,17 @@ class TransactionApiTest(TestCase):
         transaction.refresh_from_db()
         self.assertEqual(transaction.status, 1)
         self.assertEqual(transaction.declined_comment, None)
+
+        positive_balance_object = OutstandingBalance.objects.filter(
+            payer=self.user1,
+            receiver=self.user2,
+        ).first()
+        negative_balance_object = OutstandingBalance.objects.filter(
+            payer=self.user2,
+            receiver=self.user1,
+        ).first()
+        self.assertIsNone(positive_balance_object)
+        self.assertIsNone(negative_balance_object)
 
     def test_update_accepted_transaction(self):
         payload = {
