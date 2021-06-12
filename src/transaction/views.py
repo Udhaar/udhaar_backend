@@ -9,6 +9,9 @@ from .serializers import (TransactionSerializer,
                           TransactionCreateSerializer,
                           TransactionUpdateSerializer)
 
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
 
 class TransactionViewSet(viewsets.ModelViewSet):
     serializer_class = TransactionSerializer
@@ -36,6 +39,16 @@ class TransactionViewSet(viewsets.ModelViewSet):
         else:
             return super().get_queryset()
 
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                "user_external_id",
+                openapi.IN_QUERY,
+                description="external id of user to know balance with",
+                type="str"
+            )
+        ]
+    )
     def list(self, request, *args, **kwargs):
         user1 = self.request.user
         user2 = User.objects.get(
