@@ -32,7 +32,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
         if self.action == "list":
             user1 = self.request.user
             user2 = User.objects.get(
-                external_id=self.request.query_params.get("user"))
+                external_id=self.request.query_params.get("user_external_id"))
             return self.queryset.filter(payer=user1, receiver=user2).union(
                 self.queryset.filter(payer=user2, receiver=user1)
             )
@@ -52,7 +52,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         user1 = self.request.user
         user2 = User.objects.get(
-            external_id=request.query_params.get("user"))
+            external_id=request.query_params.get("user_external_id"))
         if user1.id == user2.id:
             return response.Response({
                 "error": "Cannot query transaction with yourself!"

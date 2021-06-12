@@ -198,14 +198,14 @@ class TransactionApiTest(TestCase):
             many=True
         )
         res = self.client.get(
-            f"{TRANSACTION_URL}?user={self.user3.external_id}")
+            f"{TRANSACTION_URL}?user_external_id={self.user3.external_id}")
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, transactions.data)
 
     def test_list_transactions_same_user(self):
         self.client.force_authenticate(self.user1)
         res = self.client.get(
-            f"{TRANSACTION_URL}?user={self.user1.external_id}")
+            f"{TRANSACTION_URL}?user_external_id={self.user1.external_id}")
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_do_not_list_declined_transactions(self):
@@ -271,7 +271,7 @@ class TransactionApiTest(TestCase):
             many=True
         )
         res = self.client.get(
-            f"{TRANSACTION_URL}?user={self.user3.external_id}")
+            f"{TRANSACTION_URL}?user_external_id={self.user3.external_id}")
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, transactions.data)
 
