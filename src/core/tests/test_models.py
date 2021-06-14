@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from datetime import datetime
-from ..models import User, Transaction
+from ..models import User, Transaction, OutstandingBalance
 
 user_model = get_user_model()
 test_date = datetime.now()
@@ -101,4 +101,29 @@ class ModelTests(TestCase):
         self.assertEqual(
             str(transaction),
             "Transaction PayerF PayerL => ReceiverF ReceiverL : 10.00"
+        )
+
+    def test_outstanding_balance_string(self):
+        payer = user_model.objects.create_user(
+            email="payer@gmail.com",
+            password="Payer@123",
+            first_name="PayerF",
+            last_name="PayerL",
+        )
+        receiver = user_model.objects.create_user(
+            email="receiver@gmail.com",
+            password="Receiver@123",
+            first_name="ReceiverF",
+            last_name="ReceiverL",
+        )
+
+        outstanding_balance = OutstandingBalance.objects.create(
+            payer=payer,
+            receiver=receiver,
+            balance=10.00
+        )
+
+        self.assertEqual(
+            "receiver@gmail.com owes payer@gmail.com : 10.00",
+            str(outstanding_balance)
         )

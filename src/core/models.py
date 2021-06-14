@@ -148,4 +148,4 @@ class OutstandingBalance(BaseModel):
 
     def __str__(self) -> str:
         return f"{self.receiver.email} owes {self.payer.email} : \
-{self.amount:.2f}"
+{self.balance:.2f}"
