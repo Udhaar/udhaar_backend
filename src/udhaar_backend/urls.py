@@ -28,4 +28,6 @@ urlpatterns = [
     path('api/transaction/', include('transaction.urls')),
     path('api/balance/', include('balance.urls')),
     path('api/dj-rest-auth/', include('dj_rest_auth.urls')),
+    path('/api/dj-rest-auth/registration/',
+         include('dj_rest_auth.registration.urls'))
 ]
