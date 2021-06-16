@@ -5,10 +5,12 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
 from core.models import User
+from user.serializers import UserSerializer
 
 user_model: User = get_user_model()
 CREATE_USER_URL = reverse("user:create")
 CREATE_TOKEN_URL = reverse("user:token")
+USER_SEARCH_URL = reverse("user:search")
 USER_URL = reverse("user:me")
 
 
@@ -189,3 +191,24 @@ class PrivateUserApiTests(TestCase):
         self.user.refresh_from_db()
         self.assertEqual(self.user.email, old_email)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_user_search_success(self):
+        user1 = make_user(first_name="testfirst", last_name="testlast",
+                          email="user@test.com", password="User@123")
+        res = self.client.get(
+            f"{USER_SEARCH_URL}?email=user@test.com"
+        )
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, UserSerializer(user1).data)
+
+    def test_user_search_not_found(self):
+        res = self.client.get(
+            f"{USER_SEARCH_URL}?email=usernotexist@test.com"
+        )
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_user_search_self_not_found(self):
+        res = self.client.get(
+            f"{USER_SEARCH_URL}?email=admin@test.com"
+        )
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
