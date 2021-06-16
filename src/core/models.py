@@ -149,3 +149,21 @@ class OutstandingBalance(BaseModel):
     def __str__(self) -> str:
         return f"{self.receiver.email} owes {self.payer.email} : \
 {self.balance:.2f}"
+
+class Notification(BaseModel):
+    user = models.ForeignKey(
+        User,
+        related_name="user",
+        on_delete=models.PROTECT,
+        null=False,
+        blank=False
+    )
+    is_dismissed = models.BooleanField(
+        default=False, null=False
+    )
+    message = models.TextField(null=False, blank=False)
+    notification_type = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self) -> str:
+        return f"{self.user.email} {self.message} {self.is_dismissed}"
+
