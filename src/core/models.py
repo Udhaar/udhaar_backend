@@ -141,7 +141,6 @@ class Transaction(BaseModel):
             DECLINED_TRANSACTION.value,
             transaction=self,
         )
-        print(Notification.objects.all())
 
     def __str__(self) -> str:
         return f"Transaction {self.payer.name()} => {self.receiver.name()} : \
