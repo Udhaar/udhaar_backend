@@ -114,6 +114,10 @@ class Transaction(BaseModel):
         self.status = StatusChoices.ACCEPTED.value
         self.save()
 
+        Notification.objects.filter(
+            transaction=self
+        ).first().delete()
+
         Notification.objects.create(
             user=self.created_by,
             notification_type=NotificationTypeChoices.
@@ -122,17 +126,22 @@ class Transaction(BaseModel):
         )
 
     def decline(self, comment):
+
         self.status = StatusChoices.DECLINED.value
         if comment:
             self.declined_comment = comment
         self.save()
 
+        Notification.objects.filter(
+            transaction=self
+        ).first().delete()
         Notification.objects.create(
             user=self.created_by,
             notification_type=NotificationTypeChoices.
             DECLINED_TRANSACTION.value,
             transaction=self,
         )
+        print(Notification.objects.all())
 
     def __str__(self) -> str:
         return f"Transaction {self.payer.name()} => {self.receiver.name()} : \
