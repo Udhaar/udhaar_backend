@@ -8,6 +8,8 @@ import uuid
 from django.utils import timezone
 import enum
 from decimal import Decimal
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 
 
 class UserManager(BaseUserManager):
@@ -112,11 +114,25 @@ class Transaction(BaseModel):
         self.status = StatusChoices.ACCEPTED.value
         self.save()
 
+        Notification.objects.create(
+            user=self.created_by,
+            notification_type=NotificationTypeChoices.
+            ACCEPTED_TRANSACTION.value,
+            transaction=self,
+        )
+
     def decline(self, comment):
         self.status = StatusChoices.DECLINED.value
         if comment:
             self.declined_comment = comment
         self.save()
+
+        Notification.objects.create(
+            user=self.created_by,
+            notification_type=NotificationTypeChoices.
+            DECLINED_TRANSACTION.value,
+            transaction=self,
+        )
 
     def __str__(self) -> str:
         return f"Transaction {self.payer.name()} => {self.receiver.name()} : \
@@ -152,7 +168,8 @@ class OutstandingBalance(BaseModel):
 
 
 class NotificationTypeChoices(enum.Enum):
-    NEW_TRANSACTION = "NEW_TRANSACTION"
+    NEW_RECEIVED_TRANSACTION = "NEW_RECEIVED_TRANSACTION"
+    NEW_SENT_TRANSACTION = "NEW_SENT_TRANSACTION"
     ACCEPTED_TRANSACTION = "ACCEPTED_TRANSACTION"
     DECLINED_TRANSACTION = "DECLINED_TRANSACTION"
 
@@ -165,14 +182,19 @@ class Notification(BaseModel):
     user = models.ForeignKey(
         User,
         related_name="user",
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         null=False,
         blank=False
+    )
+    transaction = models.ForeignKey(
+        Transaction, related_name="transaction",
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE
     )
     is_dismissed = models.BooleanField(
         default=False, null=False
     )
-    message = models.TextField(null=False, blank=False)
     notification_type = models.CharField(
         choices=NOTIFICATION_TYPE_CHOICES,
         blank=False,
@@ -181,5 +203,29 @@ class Notification(BaseModel):
     )
 
     def __str__(self) -> str:
-        return f"{self.user.email} {self.message} {self.is_dismissed} \
-{self.notification_type.value}"
+        return f"{self.user.email} {self.is_dismissed} \
+{self.notification_type}"
+
+
+@receiver(post_save, sender=Transaction)
+def create_notification(sender, instance: Transaction, created, **kwargs):
+    if created:
+        user = (
+            instance.payer
+            if
+            instance.created_by.id == instance.receiver.id
+            else
+            instance.receiver
+        )
+        notification_type = (
+            NotificationTypeChoices.NEW_SENT_TRANSACTION
+            if
+            instance.created_by.id == instance.receiver.id
+            else
+            NotificationTypeChoices.NEW_RECEIVED_TRANSACTION
+        )
+        Notification.objects.create(
+            user=user,
+            notification_type=notification_type.value,
+            transaction=instance
+        )

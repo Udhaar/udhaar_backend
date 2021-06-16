@@ -1,7 +1,12 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from datetime import datetime
-from ..models import NotificationTypeChoices, User, Transaction, OutstandingBalance, Notification
+from ..models import (
+    User,
+    Transaction,
+    OutstandingBalance,
+    Notification,
+)
 
 user_model = get_user_model()
 test_date = datetime.now()
@@ -129,20 +134,30 @@ class ModelTests(TestCase):
         )
 
     def test_notification_string(self):
-        user = user_model.objects.create_user(
-            email="user@gmail.com",
+        user1 = user_model.objects.create_user(
+            email="user1@gmail.com",
             password="User@123",
             first_name="UserF",
             last_name="UserL",
         )
-        message = "message : Paid 10 rs."
-
-        notification = Notification.objects.create(
-            user=user,
-            message=message,
-            notification_type=NotificationTypeChoices.ACCEPTED_TRANSACTION,
+        user2 = user_model.objects.create_user(
+            email="user2@gmail.com",
+            password="User@123",
+            first_name="UserF",
+            last_name="UserL",
         )
+
+        Transaction.objects.create(
+            payer=user1,
+            receiver=user2,
+            created_by=user1,
+            amount=10.00,
+            message="First transaction"
+        )
+
+        notification = Notification.objects.filter(user=user2).first()
+
         self.assertEqual(
-            "user@gmail.com message : Paid 10 rs. False ACCEPTED_TRANSACTION",
+            "user2@gmail.com False NEW_RECEIVED_TRANSACTION",
             str(notification)
         )
