@@ -1,7 +1,12 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from datetime import datetime
-from ..models import User, Transaction, OutstandingBalance
+from ..models import (
+    User,
+    Transaction,
+    OutstandingBalance,
+    Notification,
+)
 
 user_model = get_user_model()
 test_date = datetime.now()
@@ -126,4 +131,33 @@ class ModelTests(TestCase):
         self.assertEqual(
             "receiver@gmail.com owes payer@gmail.com : 10.00",
             str(outstanding_balance)
+        )
+
+    def test_notification_string(self):
+        user1 = user_model.objects.create_user(
+            email="user1@gmail.com",
+            password="User@123",
+            first_name="UserF",
+            last_name="UserL",
+        )
+        user2 = user_model.objects.create_user(
+            email="user2@gmail.com",
+            password="User@123",
+            first_name="UserF",
+            last_name="UserL",
+        )
+
+        Transaction.objects.create(
+            payer=user1,
+            receiver=user2,
+            created_by=user1,
+            amount=10.00,
+            message="First transaction"
+        )
+
+        notification = Notification.objects.filter(user=user2).first()
+
+        self.assertEqual(
+            "user2@gmail.com False NEW_RECEIVED_TRANSACTION",
+            str(notification)
         )

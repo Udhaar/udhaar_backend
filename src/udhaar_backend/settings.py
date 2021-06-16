@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'user',
     'transaction',
     'balance',
+    'notification',
 ]
 
 SWAGGER_SETTINGS = {
