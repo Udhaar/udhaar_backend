@@ -150,6 +150,17 @@ class OutstandingBalance(BaseModel):
         return f"{self.receiver.email} owes {self.payer.email} : \
 {self.balance:.2f}"
 
+
+class NotificationTypeChoices(enum.Enum):
+    NEW_TRANSACTION = "NEW_TRANSACTION"
+    ACCEPTED_TRANSACTION = "ACCEPTED_TRANSACTION"
+    DECLINED_TRANSACTION = "DECLINED_TRANSACTION"
+
+
+NOTIFICATION_TYPE_CHOICES = [(choice.value, choice.name)
+                             for choice in NotificationTypeChoices]
+
+
 class Notification(BaseModel):
     user = models.ForeignKey(
         User,
@@ -162,8 +173,13 @@ class Notification(BaseModel):
         default=False, null=False
     )
     message = models.TextField(null=False, blank=False)
-    notification_type = models.CharField(max_length=255, blank=True, null=True)
+    notification_type = models.CharField(
+        choices=NOTIFICATION_TYPE_CHOICES,
+        blank=False,
+        null=False,
+        max_length=255
+    )
 
     def __str__(self) -> str:
-        return f"{self.user.email} {self.message} {self.is_dismissed}"
-
+        return f"{self.user.email} {self.message} {self.is_dismissed} \
+{self.notification_type.value}"

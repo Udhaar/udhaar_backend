@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from datetime import datetime
-from ..models import User, Transaction, OutstandingBalance, Notification
+from ..models import NotificationTypeChoices, User, Transaction, OutstandingBalance, Notification
 
 user_model = get_user_model()
 test_date = datetime.now()
@@ -139,9 +139,10 @@ class ModelTests(TestCase):
 
         notification = Notification.objects.create(
             user=user,
-            message=message
+            message=message,
+            notification_type=NotificationTypeChoices.ACCEPTED_TRANSACTION,
         )
         self.assertEqual(
-            "user@gmail.com message : Paid 10 rs. false",
+            "user@gmail.com message : Paid 10 rs. False ACCEPTED_TRANSACTION",
             str(notification)
         )
