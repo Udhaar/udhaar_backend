@@ -1,0 +1,122 @@
+[
+  {
+    "model": "core.outstandingbalance",
+    "pk": 1,
+    "fields": {
+      "external_id": "9090fe1e-5262-47f0-873e-ec3f0db6955f",
+      "created_date": "2021-06-17T10:00:44.803",
+      "last_modified_date": "2021-06-17T09:32:39.261",
+      "payer": 1,
+      "receiver": 2,
+      "balance": "360.00"
+    }
+  },
+  {
+    "model": "core.outstandingbalance",
+    "pk": 2,
+    "fields": {
+      "external_id": "844d0a00-2c07-4c01-9af2-41a01f86c895",
+      "created_date": "2021-06-17T10:00:44.801",
+      "last_modified_date": "2021-06-17T09:32:39.261",
+      "payer": 2,
+      "receiver": 1,
+      "balance": "-360.00"
+    }
+  },
+  {
+    "model": "core.outstandingbalance",
+    "pk": 3,
+    "fields": {
+      "external_id": "0a83587f-213d-4196-9303-e8476e3dfd0d",
+      "created_date": "2021-06-17T09:43:26.907",
+      "last_modified_date": "2021-06-17T09:43:26.906",
+      "payer": 1,
+      "receiver": 4,
+      "balance": "565.00"
+    }
+  },
+  {
+    "model": "core.outstandingbalance",
+    "pk": 4,
+    "fields": {
+      "external_id": "aadcfe55-c525-4d9d-aff1-d406a7b32e8f",
+      "created_date": "2021-06-17T09:43:26.932",
+      "last_modified_date": "2021-06-17T09:43:26.906",
+      "payer": 4,
+      "receiver": 1,
+      "balance": "-565.00"
+    }
+  },
+  {
+    "model": "core.outstandingbalance",
+    "pk": 5,
+    "fields": {
+      "external_id": "ec907b86-4def-4ccd-a770-6982099ffacb",
+      "created_date": "2021-06-17T09:44:38.025",
+      "last_modified_date": "2021-06-17T09:44:38.025",
+      "payer": 3,
+      "receiver": 4,
+      "balance": "476.00"
+    }
+  },
+  {
+    "model": "core.outstandingbalance",
+    "pk": 6,
+    "fields": {
+      "external_id": "33d01609-c22d-447b-95d3-e664400f88fa",
+      "created_date": "2021-06-17T09:44:38.033",
+      "last_modified_date": "2021-06-17T09:44:38.025",
+      "payer": 4,
+      "receiver": 3,
+      "balance": "-476.00"
+    }
+  },
+  {
+    "model": "core.outstandingbalance",
+    "pk": 7,
+    "fields": {
+      "external_id": "04b1bb48-ddcc-4334-a58c-141ea6408107",
+      "created_date": "2021-06-17T09:54:57.670",
+      "last_modified_date": "2021-06-17T09:50:42.513",
+      "payer": 2,
+      "receiver": 3,
+      "balance": "1007.00"
+    }
+  },
+  {
+    "model": "core.outstandingbalance",
+    "pk": 8,
+    "fields": {
+      "external_id": "7d318031-b0e1-4e7c-a755-7e9e5a423b10",
+      "created_date": "2021-06-17T09:54:57.673",
+      "last_modified_date": "2021-06-17T09:50:42.513",
+      "payer": 3,
+      "receiver": 2,
+      "balance": "-1007.00"
+    }
+  },
+  {
+    "model": "core.outstandingbalance",
+    "pk": 9,
+    "fields": {
+      "external_id": "dfe79315-a2fb-4738-ab5c-a2a52f12168a",
+      "created_date": "2021-06-17T09:57:28.473",
+      "last_modified_date": "2021-06-17T09:57:28.473",
+      "payer": 4,
+      "receiver": 2,
+      "balance": "23.00"
+    }
+  },
+  {
+    "model": "core.outstandingbalance",
+    "pk": 10,
+    "fields": {
+      "external_id": "9a961841-9f37-465d-b1e2-aa3877a271f0",
+      "created_date": "2021-06-17T09:57:28.476",
+      "last_modified_date": "2021-06-17T09:57:28.473",
+      "payer": 2,
+      "receiver": 4,
+      "balance": "-23.00"
+    }
+  }
+]

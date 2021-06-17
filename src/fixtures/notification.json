@@ -1,0 +1,340 @@
+[
+  {
+    "model": "core.notification",
+    "pk": 5,
+    "fields": {
+      "external_id": "baf174c9-b141-4293-9ba7-b86f26fc4093",
+      "created_date": "2021-06-17T09:26:40.794",
+      "last_modified_date": "2021-06-17T09:26:40.793",
+      "user": 3,
+      "transaction": 5,
+      "is_dismissed": false,
+      "notification_type": "NEW_RECEIVED_TRANSACTION"
+    }
+  },
+  {
+    "model": "core.notification",
+    "pk": 6,
+    "fields": {
+      "external_id": "9dcba9c3-2497-4a36-8f18-50b872ff4e68",
+      "created_date": "2021-06-17T09:26:47.957",
+      "last_modified_date": "2021-06-17T09:26:47.957",
+      "user": 3,
+      "transaction": 6,
+      "is_dismissed": false,
+      "notification_type": "NEW_RECEIVED_TRANSACTION"
+    }
+  },
+  {
+    "model": "core.notification",
+    "pk": 8,
+    "fields": {
+      "external_id": "4c19b0d3-59fa-4c99-8fa2-86f83dc9d98b",
+      "created_date": "2021-06-17T09:32:39.278",
+      "last_modified_date": "2021-06-17T09:32:39.278",
+      "user": 1,
+      "transaction": 1,
+      "is_dismissed": false,
+      "notification_type": "ACCEPTED_TRANSACTION"
+    }
+  },
+  {
+    "model": "core.notification",
+    "pk": 9,
+    "fields": {
+      "external_id": "2faa112c-781c-45a0-aeec-6ac975fbc175",
+      "created_date": "2021-06-17T09:34:06.223",
+      "last_modified_date": "2021-06-17T09:34:06.223",
+      "user": 1,
+      "transaction": 2,
+      "is_dismissed": false,
+      "notification_type": "DECLINED_TRANSACTION"
+    }
+  },
+  {
+    "model": "core.notification",
+    "pk": 10,
+    "fields": {
+      "external_id": "7f803600-af1e-4c97-a420-5bd3c2f5a4a0",
+      "created_date": "2021-06-17T09:34:32.357",
+      "last_modified_date": "2021-06-17T09:34:32.357",
+      "user": 1,
+      "transaction": 3,
+      "is_dismissed": false,
+      "notification_type": "ACCEPTED_TRANSACTION"
+    }
+  },
+  {
+    "model": "core.notification",
+    "pk": 11,
+    "fields": {
+      "external_id": "2dc9c927-66f2-4bba-9a49-2f2101de6e5a",
+      "created_date": "2021-06-17T09:35:25.485",
+      "last_modified_date": "2021-06-17T09:35:25.484",
+      "user": 4,
+      "transaction": 8,
+      "is_dismissed": false,
+      "notification_type": "NEW_RECEIVED_TRANSACTION"
+    }
+  },
+  {
+    "model": "core.notification",
+    "pk": 19,
+    "fields": {
+      "external_id": "aab824f6-05e6-4347-a423-52cef9efd453",
+      "created_date": "2021-06-17T09:39:50.254",
+      "last_modified_date": "2021-06-17T09:39:50.254",
+      "user": 4,
+      "transaction": 16,
+      "is_dismissed": false,
+      "notification_type": "NEW_SENT_TRANSACTION"
+    }
+  },
+  {
+    "model": "core.notification",
+    "pk": 24,
+    "fields": {
+      "external_id": "432d0e61-6bf2-4db0-8a13-5fb3fab145db",
+      "created_date": "2021-06-17T09:41:00.694",
+      "last_modified_date": "2021-06-17T09:41:00.693",
+      "user": 1,
+      "transaction": 21,
+      "is_dismissed": false,
+      "notification_type": "NEW_SENT_TRANSACTION"
+    }
+  },
+  {
+    "model": "core.notification",
+    "pk": 26,
+    "fields": {
+      "external_id": "616806ed-04ea-4aed-92ab-1e83ee7b1068",
+      "created_date": "2021-06-17T09:42:10.008",
+      "last_modified_date": "2021-06-17T09:42:10.007",
+      "user": 3,
+      "transaction": 23,
+      "is_dismissed": false,
+      "notification_type": "NEW_RECEIVED_TRANSACTION"
+    }
+  },
+  {
+    "model": "core.notification",
+    "pk": 30,
+    "fields": {
+      "external_id": "c7572d6c-69ae-4304-b484-025f33084435",
+      "created_date": "2021-06-17T09:43:26.960",
+      "last_modified_date": "2021-06-17T09:43:26.959",
+      "user": 1,
+      "transaction": 7,
+      "is_dismissed": false,
+      "notification_type": "ACCEPTED_TRANSACTION"
+    }
+  },
+  {
+    "model": "core.notification",
+    "pk": 31,
+    "fields": {
+      "external_id": "c160d561-bf27-4bd4-8ccf-c745dcf9e2a6",
+      "created_date": "2021-06-17T09:44:04.385",
+      "last_modified_date": "2021-06-17T09:44:04.384",
+      "user": 2,
+      "transaction": 9,
+      "is_dismissed": false,
+      "notification_type": "DECLINED_TRANSACTION"
+    }
+  },
+  {
+    "model": "core.notification",
+    "pk": 32,
+    "fields": {
+      "external_id": "ba04aa89-f6f6-4f66-9f24-fcf4afa4bc77",
+      "created_date": "2021-06-17T09:44:38.051",
+      "last_modified_date": "2021-06-17T09:44:38.050",
+      "user": 3,
+      "transaction": 15,
+      "is_dismissed": false,
+      "notification_type": "ACCEPTED_TRANSACTION"
+    }
+  },
+  {
+    "model": "core.notification",
+    "pk": 33,
+    "fields": {
+      "external_id": "2ad6a392-d371-48a2-9f2b-13b5b334dd99",
+      "created_date": "2021-06-17T09:45:27.378",
+      "last_modified_date": "2021-06-17T09:45:27.378",
+      "user": 3,
+      "transaction": 17,
+      "is_dismissed": false,
+      "notification_type": "DECLINED_TRANSACTION"
+    }
+  },
+  {
+    "model": "core.notification",
+    "pk": 34,
+    "fields": {
+      "external_id": "b9755644-011d-4cd9-ab30-cb1260b0b61f",
+      "created_date": "2021-06-17T09:49:10.019",
+      "last_modified_date": "2021-06-17T09:49:10.018",
+      "user": 1,
+      "transaction": 4,
+      "is_dismissed": false,
+      "notification_type": "DECLINED_TRANSACTION"
+    }
+  },
+  {
+    "model": "core.notification",
+    "pk": 35,
+    "fields": {
+      "external_id": "6b02c174-2bab-4210-8433-db682fd3d14b",
+      "created_date": "2021-06-17T09:50:42.524",
+      "last_modified_date": "2021-06-17T09:50:42.524",
+      "user": 2,
+      "transaction": 10,
+      "is_dismissed": false,
+      "notification_type": "ACCEPTED_TRANSACTION"
+    }
+  },
+  {
+    "model": "core.notification",
+    "pk": 36,
+    "fields": {
+      "external_id": "02f50561-e7cc-4acc-9c1d-37051660c33c",
+      "created_date": "2021-06-17T09:50:57.355",
+      "last_modified_date": "2021-06-17T09:50:57.354",
+      "user": 2,
+      "transaction": 11,
+      "is_dismissed": false,
+      "notification_type": "ACCEPTED_TRANSACTION"
+    }
+  },
+  {
+    "model": "core.notification",
+    "pk": 37,
+    "fields": {
+      "external_id": "c6ef04f5-6595-40d7-8a34-88dc8afc41fd",
+      "created_date": "2021-06-17T09:51:36.915",
+      "last_modified_date": "2021-06-17T09:51:36.915",
+      "user": 2,
+      "transaction": 12,
+      "is_dismissed": false,
+      "notification_type": "DECLINED_TRANSACTION"
+    }
+  },
+  {
+    "model": "core.notification",
+    "pk": 38,
+    "fields": {
+      "external_id": "a273f592-9eaa-4216-8a03-50636a266915",
+      "created_date": "2021-06-17T09:51:52.954",
+      "last_modified_date": "2021-06-17T09:51:52.954",
+      "user": 4,
+      "transaction": 22,
+      "is_dismissed": false,
+      "notification_type": "DECLINED_TRANSACTION"
+    }
+  },
+  {
+    "model": "core.notification",
+    "pk": 39,
+    "fields": {
+      "external_id": "179ff854-b5f0-47f9-90e8-41bed06daffa",
+      "created_date": "2021-06-17T09:54:57.689",
+      "last_modified_date": "2021-06-17T09:54:57.688",
+      "user": 3,
+      "transaction": 18,
+      "is_dismissed": false,
+      "notification_type": "ACCEPTED_TRANSACTION"
+    }
+  },
+  {
+    "model": "core.notification",
+    "pk": 40,
+    "fields": {
+      "external_id": "4eecf959-45c6-4e29-81cb-6a4324584832",
+      "created_date": "2021-06-17T09:55:21.378",
+      "last_modified_date": "2021-06-17T09:55:21.377",
+      "user": 3,
+      "transaction": 19,
+      "is_dismissed": false,
+      "notification_type": "DECLINED_TRANSACTION"
+    }
+  },
+  {
+    "model": "core.notification",
+    "pk": 41,
+    "fields": {
+      "external_id": "d12dbf7d-3e96-421a-8987-17fd0c0130ee",
+      "created_date": "2021-06-17T09:56:08.943",
+      "last_modified_date": "2021-06-17T09:56:08.943",
+      "user": 4,
+      "transaction": 24,
+      "is_dismissed": false,
+      "notification_type": "DECLINED_TRANSACTION"
+    }
+  },
+  {
+    "model": "core.notification",
+    "pk": 42,
+    "fields": {
+      "external_id": "d3b279e6-8245-498e-aeeb-9410b7bb1890",
+      "created_date": "2021-06-17T09:57:28.485",
+      "last_modified_date": "2021-06-17T09:57:28.485",
+      "user": 4,
+      "transaction": 25,
+      "is_dismissed": false,
+      "notification_type": "ACCEPTED_TRANSACTION"
+    }
+  },
+  {
+    "model": "core.notification",
+    "pk": 43,
+    "fields": {
+      "external_id": "ba4d5ab1-9b17-46a5-b14f-a2701989408c",
+      "created_date": "2021-06-17T09:59:35.835",
+      "last_modified_date": "2021-06-17T09:59:35.835",
+      "user": 2,
+      "transaction": 13,
+      "is_dismissed": false,
+      "notification_type": "ACCEPTED_TRANSACTION"
+    }
+  },
+  {
+    "model": "core.notification",
+    "pk": 44,
+    "fields": {
+      "external_id": "21c39aab-cea1-46c6-aa6d-fb17a597d63e",
+      "created_date": "2021-06-17T10:00:44.812",
+      "last_modified_date": "2021-06-17T10:00:44.812",
+      "user": 2,
+      "transaction": 14,
+      "is_dismissed": false,
+      "notification_type": "ACCEPTED_TRANSACTION"
+    }
+  },
+  {
+    "model": "core.notification",
+    "pk": 45,
+    "fields": {
+      "external_id": "0a8a3c20-04bb-41b2-9e80-3e0c43db25b8",
+      "created_date": "2021-06-17T10:01:17.408",
+      "last_modified_date": "2021-06-17T10:01:17.408",
+      "user": 3,
+      "transaction": 20,
+      "is_dismissed": false,
+      "notification_type": "DECLINED_TRANSACTION"
+    }
+  },
+  {
+    "model": "core.notification",
+    "pk": 46,
+    "fields": {
+      "external_id": "484cc6d1-1e5c-45b3-83c7-d8b16b7582be",
+      "created_date": "2021-06-17T10:01:33.967",
+      "last_modified_date": "2021-06-17T10:01:33.967",
+      "user": 4,
+      "transaction": 26,
+      "is_dismissed": false,
+      "notification_type": "DECLINED_TRANSACTION"
+    }
+  }
+]

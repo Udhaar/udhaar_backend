@@ -1,0 +1,78 @@
+[
+  {
+    "model": "core.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$260000$DWt2wepv9hK1Q8RP4os5mO$j/7Edul5YQYj+vbswxSAwxqh2xon5eiW7BejouZCaQ0=",
+      "last_login": null,
+      "is_superuser": false,
+      "external_id": "30f6a061-c2a3-4ff0-908e-ddc8fb1144b0",
+      "created_date": "2021-06-17T01:58:17.228",
+      "last_modified_date": "2021-06-17T01:58:17.228",
+      "email": "user1@example.com",
+      "first_name": "User1F",
+      "last_name": "User1F",
+      "is_active": true,
+      "is_staff": false,
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "core.user",
+    "pk": 2,
+    "fields": {
+      "password": "pbkdf2_sha256$260000$ikobTzRlJLj1lHWEUMlwh6$VKEKAd1hAIMtSifDn+tje0u14OEtyGFvNWT9BEkY0Po=",
+      "last_login": null,
+      "is_superuser": false,
+      "external_id": "a3ff1da8-2015-46cb-96b3-5d5237735902",
+      "created_date": "2021-06-17T01:58:29.194",
+      "last_modified_date": "2021-06-17T01:58:29.194",
+      "email": "user2@example.com",
+      "first_name": "User2F",
+      "last_name": "User2F",
+      "is_active": true,
+      "is_staff": false,
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "core.user",
+    "pk": 3,
+    "fields": {
+      "password": "pbkdf2_sha256$260000$k0iYqqpMYb9tJ1lRGOcvA6$CHgPoSp4kElM2TVIrMgU2oiW6IO+Bsbsz0m3FWEkPZg=",
+      "last_login": null,
+      "is_superuser": false,
+      "external_id": "b37fffc8-bd1a-479e-99fa-2d425872afe9",
+      "created_date": "2021-06-17T01:58:42.383",
+      "last_modified_date": "2021-06-17T01:58:42.383",
+      "email": "user3@example.com",
+      "first_name": "User3F",
+      "last_name": "User3F",
+      "is_active": true,
+      "is_staff": false,
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "core.user",
+    "pk": 4,
+    "fields": {
+      "password": "pbkdf2_sha256$260000$TN1aHbjL6d7QFmXFpaFF33$yc68x6rwjxekMVqMQRZYNjOBzq6vx1qezJfevWYt8PY=",
+      "last_login": null,
+      "is_superuser": false,
+      "external_id": "aa43c396-535c-4817-bb7e-de32f7d64fa9",
+      "created_date": "2021-06-17T01:58:52.028",
+      "last_modified_date": "2021-06-17T01:58:52.027",
+      "email": "user4@example.com",
+      "first_name": "User4F",
+      "last_name": "User4F",
+      "is_active": true,
+      "is_staff": false,
+      "groups": [],
+      "user_permissions": []
+    }
+  }
+]
