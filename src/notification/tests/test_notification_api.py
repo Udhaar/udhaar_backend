@@ -71,8 +71,8 @@ class NotificationApiTests(TestCase):
         self.client.force_authenticate(self.user2)
         res = self.client.get(NOTIFICATION_LIST_URL)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 2)
-        for notification in res.data:
+        self.assertEqual(len(res.data["results"]), 2)
+        for notification in res.data["results"]:
             self.assertEqual(
                 notification["notification_type"], "NEW_RECEIVED_TRANSACTION"
             )
@@ -82,14 +82,14 @@ class NotificationApiTests(TestCase):
         self.client.force_authenticate(self.user2)
         res = self.client.get(NOTIFICATION_LIST_URL)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 1)
+        self.assertEqual(len(res.data["results"]), 1)
 
         self.client.force_authenticate(self.user1)
         res = self.client.get(NOTIFICATION_LIST_URL)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 1)
+        self.assertEqual(len(res.data["results"]), 1)
         self.assertEqual(
-            res.data[0]["notification_type"],
+            res.data["results"][0]["notification_type"],
             "ACCEPTED_TRANSACTION"
         )
 
@@ -98,21 +98,21 @@ class NotificationApiTests(TestCase):
         self.client.force_authenticate(self.user2)
         res = self.client.get(NOTIFICATION_LIST_URL)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 1)
+        self.assertEqual(len(res.data["results"]), 1)
 
         self.client.force_authenticate(self.user1)
         res = self.client.get(NOTIFICATION_LIST_URL)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 1)
+        self.assertEqual(len(res.data["results"]), 1)
         self.assertEqual(
-            res.data[0]["notification_type"],
+            res.data["results"][0]["notification_type"],
             "DECLINED_TRANSACTION"
         )
 
     def test_dismiss_notification(self):
         self.client.force_authenticate(self.user2)
         res = self.client.get(NOTIFICATION_LIST_URL)
-        self.assertEqual(len(res.data), 2)
+        self.assertEqual(len(res.data["results"]), 2)
 
         notification: Notification = Notification.objects.filter(
             user=self.user2
@@ -124,4 +124,4 @@ class NotificationApiTests(TestCase):
 
         res = self.client.get(NOTIFICATION_LIST_URL)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 1)
+        self.assertEqual(len(res.data["results"]), 1)

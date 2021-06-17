@@ -58,9 +58,11 @@ class TransactionViewSet(viewsets.ModelViewSet):
             return response.Response({
                 "error": "Cannot query transaction with yourself!"
             }, status=status.HTTP_400_BAD_REQUEST)
-        queryset = self.get_queryset()
+
+        queryset = self.paginate_queryset(
+            self.get_queryset().order_by("-created_date"))
         serializer = self.get_serializer(queryset, many=True)
-        return response.Response(serializer.data)
+        return self.get_paginated_response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         if "receiver" in request.data and "payer" in request.data:

@@ -21,7 +21,9 @@ class NotificationViewSet(viewsets.GenericViewSet,
     lookup_field = "external_id"
 
     def get_queryset(self):
-        return self.queryset.filter(user=self.request.user)
+        return self.queryset.filter(
+            user=self.request.user
+        ).order_by("-created_date")
 
     def destroy(self, request, *args, **kwargs):
         notification = self.get_object()

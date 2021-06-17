@@ -68,12 +68,12 @@ class BalanceApiTests(TestCase):
         res = self.client.get(BALANCE_LIST_URL)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-        self.assertEqual(len(res.data), 2)
+        self.assertEqual(len(res.data["results"]), 2)
         self.assertEqual(
-            res.data[0]["user"]["external_id"],
+            res.data["results"][0]["user"]["external_id"],
             str(self.user3.external_id)
         )
-        self.assertEqual(res.data[0]["balance"], "20.00")
-        self.assertEqual(res.data[1]["user"]
+        self.assertEqual(res.data["results"][0]["balance"], "20.00")
+        self.assertEqual(res.data["results"][1]["user"]
                          ["external_id"], str(self.user2.external_id))
-        self.assertEqual(res.data[1]["balance"], "4.00")
+        self.assertEqual(res.data["results"][1]["balance"], "4.00")
