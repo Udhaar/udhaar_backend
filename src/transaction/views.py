@@ -1,4 +1,4 @@
-from rest_framework import (viewsets,
+from rest_framework import (serializers, viewsets,
                             authentication,
                             permissions,
                             status,
@@ -11,6 +11,8 @@ from .serializers import (TransactionSerializer,
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+
+
 
 
 class TransactionViewSet(viewsets.ModelViewSet):
@@ -51,16 +53,21 @@ class TransactionViewSet(viewsets.ModelViewSet):
         ]
     )
     def list(self, request, *args, **kwargs):
+        print("list functionnnnnn")
         user1 = self.request.user
         user2 = User.objects.get(
             external_id=request.query_params.get("user_external_id"))
-        if user1.id == user2.id:
-            return response.Response({
-                "error": "Cannot query transaction with yourself!"
-            }, status=status.HTTP_400_BAD_REQUEST)
-        queryset = self.get_queryset()
+        # if user1.id == user2.id:
+        #     return response.Response({
+        #         "error": "Cannot query transaction with yourself!"
+        #     }, status=status.HTTP_400_BAD_REQUEST)
+
+        print("before paginate")
+        queryset = self.paginate_queryset(self.get_queryset())
+        print("queryset : ", queryset)
         serializer = self.get_serializer(queryset, many=True)
-        return response.Response(serializer.data)
+        print(serializer)
+        return response.Response(self.get_paginated_response(serializer.data))
 
     def create(self, request, *args, **kwargs):
         if "receiver" in request.data and "payer" in request.data:
