@@ -100,4 +100,4 @@ class TransactionViewSet(viewsets.ModelViewSet):
             transaction.decline(
                 serializer.validated_data.get("declined_comment")
             )
-        return serializer.data
+        serializer.save()

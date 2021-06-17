@@ -292,6 +292,7 @@ class TransactionApiTest(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         transaction.refresh_from_db()
         self.assertEqual(transaction.status, 2)
+        self.assertEqual(res.data["status"], 2)
 
         positive_balance_object = OutstandingBalance.objects.get(
             payer=self.user1,
@@ -428,6 +429,7 @@ class TransactionApiTest(TestCase):
             }
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data["status"], 3)
 
         transaction.refresh_from_db()
         self.assertEqual(transaction.status, 3)
