@@ -3,7 +3,6 @@ from rest_framework import (viewsets,
                             permissions,
                             status,
                             response,
-                            mixins
                             )
 from core.models import StatusChoices, Transaction, User
 from .serializers import (TransactionSerializer,
@@ -14,11 +13,7 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 
-class TransactionViewSet(viewsets.GenericViewSet,
-                         mixins.CreateModelMixin,
-                         mixins.ListModelMixin,
-                         mixins.UpdateModelMixin,
-                         mixins.DestroyModelMixin):
+class TransactionViewSet(viewsets.ModelViewSet):
     serializer_class = TransactionSerializer
     queryset = Transaction.objects.filter(is_deleted=False).exclude(
         status=StatusChoices.DECLINED.value)
