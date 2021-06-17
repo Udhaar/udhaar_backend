@@ -2,7 +2,8 @@ from rest_framework import (viewsets,
                             authentication,
                             permissions,
                             status,
-                            response
+                            response,
+                            mixins
                             )
 from core.models import StatusChoices, Transaction, User
 from .serializers import (TransactionSerializer,
@@ -13,13 +14,18 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 
-class TransactionViewSet(viewsets.ModelViewSet):
+class TransactionViewSet(viewsets.GenericViewSet,
+                         mixins.CreateModelMixin,
+                         mixins.ListModelMixin,
+                         mixins.UpdateModelMixin,
+                         mixins.DestroyModelMixin):
     serializer_class = TransactionSerializer
     queryset = Transaction.objects.filter(is_deleted=False).exclude(
         status=StatusChoices.DECLINED.value)
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = "external_id"
+    http_method_names = ["patch", "get", "post", "delete"]
 
     def get_serializer_class(self):
         if self.action == "create":
