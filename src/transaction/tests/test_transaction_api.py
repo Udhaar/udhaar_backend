@@ -191,16 +191,16 @@ class TransactionApiTest(TestCase):
         transactions = TransactionSerializer(
             [
                 Transaction.objects.get(
-                    external_id=transaction3.data["external_id"]),
-                Transaction.objects.get(
                     external_id=transaction4.data["external_id"]),
+                Transaction.objects.get(
+                    external_id=transaction3.data["external_id"]),
             ],
             many=True
         )
         res = self.client.get(
             f"{TRANSACTION_URL}?user_external_id={self.user3.external_id}")
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, transactions.data)
+        self.assertEqual(res.data["results"], transactions.data)
 
     def test_list_transactions_same_user(self):
         self.client.force_authenticate(self.user1)
@@ -267,13 +267,13 @@ class TransactionApiTest(TestCase):
         transaction5_data.save()
 
         transactions = TransactionSerializer(
-            [transaction3_data, transaction4_data],
+            [transaction4_data, transaction3_data],
             many=True
         )
         res = self.client.get(
             f"{TRANSACTION_URL}?user_external_id={self.user3.external_id}")
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, transactions.data)
+        self.assertEqual(res.data["results"], transactions.data)
 
     def test_update_transactions_status_accepted(self):
         payload = {

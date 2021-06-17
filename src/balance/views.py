@@ -3,6 +3,9 @@ from rest_framework import authentication, permissions, status
 from core.models import User, OutstandingBalance
 from rest_framework.response import Response
 from .serializers import BalanceListSerializer
+from rest_framework.pagination import PageNumberPagination
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 
 class BalanceView(APIView):
@@ -31,11 +34,22 @@ class BalanceListView(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                "page",
+                openapi.IN_QUERY,
+                description="page number",
+                type="int"
+            )
+        ]
+    )
     def get(self, request):
         user = request.user
         queryset = OutstandingBalance.objects.filter(
             payer=user).order_by("-balance")
-
+        paginator = PageNumberPagination()
+        queryset = paginator.paginate_queryset(queryset, request)
         data = [{
             "user": balance.receiver,
             "balance": balance.balance
@@ -44,7 +58,4 @@ class BalanceListView(APIView):
         balances = BalanceListSerializer(data=data, many=True)
         balances.is_valid()
 
-        return Response(
-            data=balances.data,
-            status=status.HTTP_200_OK
-        )
+        return paginator.get_paginated_response(balances.data)
