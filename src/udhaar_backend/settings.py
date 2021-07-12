@@ -27,6 +27,8 @@ SECRET_KEY = 'django-insecure-c=j$kpwfx_f$qw*^@7f3a1_l)mb_6ogi-x0j(@o4@ak0dv#iyq
 DEBUG = True
 
 ALLOWED_HOSTS = ["udhaar-staging.herokuapp.com", "localhost"]
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_WHITELIST = ("http://localhost:3000", )
 
 
 # Application definition
@@ -40,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework.authtoken',
     'drf_yasg',
+    'corsheaders',
     'core',
     'user',
     'transaction',
@@ -72,6 +75,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'udhaar_backend.urls'
