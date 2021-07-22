@@ -89,6 +89,25 @@ class Transaction(BaseModel):
     message = models.TextField(null=False, blank=False)
     is_deleted = models.BooleanField(default=False, null=False, blank=False)
 
+    def save(self, **kwargs) -> None:
+        return_value = super().save(**kwargs)
+
+        positive_balance_object = OutstandingBalance.objects.filter(
+            payer=self.payer,
+            receiver=self.receiver
+        ).first()
+        if not positive_balance_object:
+            OutstandingBalance(
+                payer=self.payer,
+                receiver=self.receiver,
+            ).save()
+            OutstandingBalance(
+                payer=self.receiver,
+                receiver=self.payer,
+            ).save()
+
+        return return_value
+
     def accept(self):
         positive_balance_object = OutstandingBalance.objects.filter(
             payer=self.payer,
@@ -98,15 +117,6 @@ class Transaction(BaseModel):
             payer=self.receiver,
             receiver=self.payer,
         ).first()
-        if not positive_balance_object:
-            positive_balance_object = OutstandingBalance(
-                payer=self.payer,
-                receiver=self.receiver,
-            )
-            negative_balance_object = OutstandingBalance(
-                payer=self.receiver,
-                receiver=self.payer,
-            )
         positive_balance_object.balance += Decimal(self.amount)
         negative_balance_object.balance -= Decimal(self.amount)
         positive_balance_object.save()

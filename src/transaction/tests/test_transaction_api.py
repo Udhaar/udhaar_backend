@@ -69,6 +69,20 @@ class TransactionApiTest(TestCase):
         self.assertEqual(transaction.message, payload["message"])
         self.assertFalse(transaction.is_deleted)
 
+        positive_balance_object = OutstandingBalance.objects.filter(
+            payer=self.user1,
+            receiver=self.user2
+        ).first()
+        self.assertIsNotNone(positive_balance_object)
+        self.assertEqual(positive_balance_object.balance, 0.0)
+
+        negative_balance_object = OutstandingBalance.objects.filter(
+            payer=self.user2,
+            receiver=self.user1
+        ).first()
+        self.assertIsNotNone(negative_balance_object)
+        self.assertEqual(negative_balance_object.balance, 0.0)
+
     def test_create_transaction_by_user_success_receiver(self):
         self.client.force_authenticate(self.user1)
         payload = {
@@ -89,6 +103,20 @@ class TransactionApiTest(TestCase):
         self.assertIsNone(transaction.declined_comment)
         self.assertEqual(transaction.message, payload["message"])
         self.assertFalse(transaction.is_deleted)
+
+        positive_balance_object = OutstandingBalance.objects.filter(
+            payer=self.user3,
+            receiver=self.user1
+        ).first()
+        self.assertIsNotNone(positive_balance_object)
+        self.assertEqual(positive_balance_object.balance, 0.0)
+
+        negative_balance_object = OutstandingBalance.objects.filter(
+            payer=self.user1,
+            receiver=self.user3
+        ).first()
+        self.assertIsNotNone(negative_balance_object)
+        self.assertEqual(negative_balance_object.balance, 0.0)
 
     def test_create_transaction_by_user_fail(self):
         self.client.force_authenticate(self.user1)
@@ -331,8 +359,8 @@ class TransactionApiTest(TestCase):
             payer=self.user2,
             receiver=self.user1,
         ).first()
-        self.assertIsNone(positive_balance_object)
-        self.assertIsNone(negative_balance_object)
+        self.assertEqual(positive_balance_object.balance, 0.0)
+        self.assertEqual(negative_balance_object.balance, 0.0)
 
     def test_update_transactions_status_accepted_by_other_fail(self):
         payload = {
@@ -360,8 +388,8 @@ class TransactionApiTest(TestCase):
             payer=self.user2,
             receiver=self.user1,
         ).first()
-        self.assertIsNone(positive_balance_object)
-        self.assertIsNone(negative_balance_object)
+        self.assertEqual(positive_balance_object.balance, 0.0)
+        self.assertEqual(negative_balance_object.balance, 0.0)
 
     def test_update_transactions_message_fails(self):
         payload = {
@@ -443,8 +471,8 @@ class TransactionApiTest(TestCase):
             payer=self.user2,
             receiver=self.user1,
         ).first()
-        self.assertIsNone(positive_balance_object)
-        self.assertIsNone(negative_balance_object)
+        self.assertEqual(positive_balance_object.balance, 0.0)
+        self.assertEqual(negative_balance_object.balance, 0.0)
 
     def test_update_transaction_declined_success_without_comment(self):
         payload = {
@@ -479,8 +507,8 @@ class TransactionApiTest(TestCase):
             payer=self.user2,
             receiver=self.user1,
         ).first()
-        self.assertIsNone(positive_balance_object)
-        self.assertIsNone(negative_balance_object)
+        self.assertEqual(positive_balance_object.balance, 0.0)
+        self.assertEqual(negative_balance_object.balance, 0.0)
 
     def test_update_transaction_accepted_fail_with_comment(self):
         payload = {
@@ -516,8 +544,8 @@ class TransactionApiTest(TestCase):
             payer=self.user2,
             receiver=self.user1,
         ).first()
-        self.assertIsNone(positive_balance_object)
-        self.assertIsNone(negative_balance_object)
+        self.assertEqual(positive_balance_object.balance, 0.0)
+        self.assertEqual(negative_balance_object.balance, 0.0)
 
     def test_update_accepted_transaction(self):
         payload = {
