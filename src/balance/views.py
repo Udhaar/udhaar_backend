@@ -29,7 +29,10 @@ class BalanceView(APIView):
                 status=status.HTTP_200_OK
             )
         return Response(
-            {"balance": 0.0},
+            {
+                "balance": 0.0,
+                "user": UserSerializer(receiver).data,
+            },
             status=status.HTTP_200_OK
         )
 
