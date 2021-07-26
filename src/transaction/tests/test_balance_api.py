@@ -3,6 +3,7 @@ from rest_framework.test import APIClient
 from core.models import Transaction, User
 from django.urls import reverse
 from rest_framework import status
+from user.serializers import UserSerializer
 
 
 def balance_url(user):
@@ -43,25 +44,52 @@ class BalanceApiTests(TestCase):
         self.client.force_authenticate(self.user1)
         res = self.client.get(balance_url(self.user2))
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertDictEqual(res.data, {"balance": 0.0})
+        self.assertDictEqual(
+            res.data,
+            {
+                "balance": 0.0,
+                "user": UserSerializer(self.user2).data
+            }
+        )
 
         self.transaction1.accept()
         res = self.client.get(balance_url(self.user2))
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertDictEqual(res.data, {"balance": 14.0})
+        self.assertDictEqual(
+            res.data,
+            {
+                "balance": 14.0,
+                "user": UserSerializer(self.user2).data
+            }
+        )
 
         self.client.force_authenticate(self.user2)
         res = self.client.get(balance_url(self.user1))
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertDictEqual(res.data, {"balance": -14.0})
+        self.assertDictEqual(
+            res.data,
+            {"balance": -14.0,
+             "user": UserSerializer(self.user1).data
+             }
+        )
 
         self.transaction2.accept()
         self.client.force_authenticate(self.user1)
         res = self.client.get(balance_url(self.user2))
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertDictEqual(res.data, {"balance": 4.0})
+        self.assertDictEqual(
+            res.data,
+            {"balance": 4.0,
+             "user": UserSerializer(self.user2).data
+             }
+        )
 
         self.client.force_authenticate(self.user2)
         res = self.client.get(balance_url(self.user1))
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertDictEqual(res.data, {"balance": -4.0})
+        self.assertDictEqual(
+            res.data,
+            {"balance": -4.0,
+             "user": UserSerializer(self.user1).data
+             }
+        )

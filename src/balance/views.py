@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework import authentication, permissions, status
 from core.models import User, OutstandingBalance
 from rest_framework.response import Response
+from user.serializers import UserSerializer
 from .serializers import BalanceListSerializer
 from rest_framework.pagination import PageNumberPagination
 from drf_yasg.utils import swagger_auto_schema
@@ -21,7 +22,10 @@ class BalanceView(APIView):
         ).first()
         if balance:
             return Response(
-                {"balance": balance.balance},
+                {
+                    "balance": balance.balance,
+                    "user": UserSerializer(receiver).data,
+                },
                 status=status.HTTP_200_OK
             )
         return Response(
