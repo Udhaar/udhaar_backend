@@ -1,5 +1,7 @@
 ![Logo](https://udhaar.me/Logoo.svg)
 
+[![Tests](https://github.com/Udhaar/udhaar_backend/actions/workflows/run_tests.yml/badge.svg)](https://github.com/Udhaar/udhaar_backend/actions/workflows/run_tests.yml)
+
 # Project Title
 
 Udhaar is a personal finance and debt management app that helps you track your debts and loans with friends.
