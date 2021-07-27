@@ -30,7 +30,7 @@ You need to have docker and docker-compose installed.
 
 ## Demo
 
-[staging.udhaar.me](staging.udhaar.me)
+[staging.udhaar.me](https://staging.udhaar.me)
 
 ## Environment Variables
 
