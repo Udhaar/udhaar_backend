@@ -28,7 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["udhaar-staging.herokuapp.com", "api.udhaar.me", "localhost"]
 CORS_ORIGIN_ALLOW_ALL = False
-CORS_ORIGIN_WHITELIST = ("http://localhost:3000", )
+CORS_ALLOWED_ORIGIN_REGEXES = ("http://localhost:3000", r"^https://\w+\.udhaar\.me$")
 
 
 # Application definition
